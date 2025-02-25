@@ -16,16 +16,15 @@ public class ThirdPesonController : MonoBehaviour
     private float realSpeed;//la velocidad que actualmente usamos
 
     //Disparo
-    public GameObject balaPrefad;
-    public Transform[] puntoDisparo;
-    private int indexDisparo = 0;
-    public float radioDeteccion = 10f;
-    public float velocidadBala = 10f;
-    public float tiempoEntreDisparos = 1f;
-    public LayerMask capaEnemigo;
+    public GameObject balaPrefad;//prefad disparo
+    public Transform[] puntoDisparo;//puntos de salida disparos
+    public float radioDeteccion = 10f;//Radio deteccion enemigos
+    public float velocidadBala = 10f;//Velocidad a la que sale la bala
+    public float tiempoEntreDisparos = 1f;//tiempo entre disparos
+    public int damage = 1;//da;o misiles
+    public LayerMask capaEnemigo;//Capa para detectar enemigos
 
-    private float tiempoUltimoDisparo = 0f;
-    private bool permitidoDisparar = true;
+    private bool permitidoDisparar = true;//saber si podemos disparar
     void Start()
     {
         realSpeed = moveSpeed;//asignamos por defecto la speed normal a la speed real
@@ -43,7 +42,7 @@ public class ThirdPesonController : MonoBehaviour
     {
         Move();//funcion de movimiento
         RotateWithMouse();//funcion de camara
-        if (Input.GetKeyDown(KeyCode.Mouse0))
+        if (Input.GetKeyDown(KeyCode.Mouse0))//cuando apretamos click izquierdo mouse
         {
             Debug.Log("Tecla disparo");
             Disparo();
@@ -102,40 +101,46 @@ public class ThirdPesonController : MonoBehaviour
     }
 
     //Disparo
-    public void Disparo()
+    public void Disparo()//funcion que controla el disapro
     {
-        Collider[] enemigos = Physics.OverlapSphere(transform.position, radioDeteccion, capaEnemigo);
+        Collider[] enemigos = Physics.OverlapSphere(transform.position, radioDeteccion, capaEnemigo);//detecta los enemigos
 
-        if(enemigos.Length > 0)
+        if(enemigos.Length > 0)//almenos 1 enemigo detectado
         {
-            Transform enemigoMasCercano = ObtenerRnemigoMasCercano(enemigos);
+            Transform enemigoMasCercano = ObtenerRnemigoMasCercano(enemigos);//nos da el enemigo mas cercano
 
-            if(enemigoMasCercano != null && permitidoDisparar)
+            if(enemigoMasCercano != null && permitidoDisparar)//si se permite disparar
             {
-                permitidoDisparar = false;
-                StartCoroutine(nuevoDisparo());
-                Disparar(enemigoMasCercano);
+                permitidoDisparar = false;//bloquemos el poder disparar
+                StartCoroutine(nuevoDisparo());//esperamos que termine la corrutina para volver a disparar
+                Disparar(enemigoMasCercano);//llamamos a disaprar y le pasamos la posicion del enemigo mas cercano
             }
         }
     }
     public void Disparar(Transform enemigo)
     {
+        //creamos las balas
+        GameObject bala = Instantiate(balaPrefad, puntoDisparo[0].position, Quaternion.identity);
+        GameObject bala2 = Instantiate(balaPrefad, puntoDisparo[1].position, Quaternion.identity);
 
-        GameObject bala = Instantiate(balaPrefad, puntoDisparo[indexDisparo].position, Quaternion.identity);
-        indexDisparo++;
-        if(indexDisparo == puntoDisparo.Length)
-            indexDisparo = 0;
-
+        //configuramos direccion y velocidad
         bala.transform.LookAt(enemigo.position);
         bala.AddComponent<MovimientoBala>();
         bala.GetComponent<MovimientoBala>().velocidad = velocidadBala;
+
+        bala2.transform.LookAt(enemigo.position);
+        bala2.AddComponent<MovimientoBala>();
+        bala2.GetComponent<MovimientoBala>().velocidad = velocidadBala;
+
+        bala.GetComponent<Disparo>().damage = damage;
+        bala2.GetComponent<Disparo>().damage = damage;
     }
     public Transform ObtenerRnemigoMasCercano(Collider[] enemigos)
     {
-        Transform enemigoMasCercano = null;
-        float distanciaMinima = Mathf.Infinity;
+        Transform enemigoMasCercano = null;//poscion enemigo mas cercano
+        float distanciaMinima = Mathf.Infinity;//le asignamos un valor infinito de base
 
-        foreach(Collider enemigo in enemigos)
+        foreach(Collider enemigo in enemigos)//revisamos todos los enemigos para saber el mas cercano
         {
             float distancia = Vector3.Distance(transform.position, enemigo.transform.position);
             if (distancia < distanciaMinima)
