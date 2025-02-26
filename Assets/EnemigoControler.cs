@@ -5,26 +5,26 @@ using UnityEngine.AI;
 
 public class EnemigoControler : MonoBehaviour
 {
-    public int life;
-    public int Damage;
-    public Transform player;
-    private NavMeshAgent agent;
-    private bool enemigoDetectado = false;
-    public Transform point;
+    public int life;//vida enemigo
+    public int Damage;//ataque del enemigo
+    public Transform player;//posicion del target a perseguir
+    private NavMeshAgent agent;//referencia al agent navmesh
+    private bool enemigoDetectado = false;//sabemos si ya detecto al enemigo
+    public Transform point;//punto al cual patrullar
 
     //Ray
-    public float rayDistance = 10f;
-    public GameObject vista;
+    public float rayDistance = 10f;//distancia en la que detecta al player
+    public GameObject vista;//punto de salida de los ojos
     private void Start()
     {
         agent = GetComponent<NavMeshAgent>();
-        point = LevelManager.instance.getNewPoint().transform;
+        point = LevelManager.instance.getNewPoint().transform;//pedimos al levelmanager un putno aleatorio para ir
     }
 
-    public void DamagenEmigo(int _damage)
+    public void DamagenEmigo(int _damage)//cuando el enemigo es lastimado
     {
         life -= _damage;
-        if (life <= 0)
+        if (life <= 0)//si se queda sin vidas muere
         {
             LevelManager.instance.enemigoDestruido();
             Destroy(gameObject);
@@ -34,7 +34,7 @@ public class EnemigoControler : MonoBehaviour
     {
 
         RaycastHit hit;
-        if(Physics.Raycast(vista.transform.position,transform.forward,out hit, rayDistance))
+        if(Physics.Raycast(vista.transform.position,transform.forward,out hit, rayDistance))//chequjemos si ve al player para terminar el juego
         {
             //Debug.Log("Tag detectado: " + hit.collider.tag);
             if(hit.collider.tag == "Player")
@@ -46,7 +46,7 @@ public class EnemigoControler : MonoBehaviour
         }
         Debug.DrawRay(vista.transform.position, transform.forward * rayDistance, Color.red);
 
-
+        //determina que tarjet perseguir
         if(player != null && enemigoDetectado)
         {
             agent.SetDestination(player.position);
@@ -55,6 +55,7 @@ public class EnemigoControler : MonoBehaviour
         {
             agent.SetDestination(point.position);
         }
+        //calcula si ya llego al punto a perseguir
         if (!agent.pathPending && agent.remainingDistance <= agent.stoppingDistance)
         {
             if (!agent.hasPath || agent.velocity.sqrMagnitude == 0f)
@@ -65,7 +66,7 @@ public class EnemigoControler : MonoBehaviour
                 }
                 else
                 {
-                    point = LevelManager.instance.getNewPoint().transform;
+                    point = LevelManager.instance.getNewPoint().transform;//si ya llego al punto pide uno nuevo
                 }
             }
         }

@@ -33,7 +33,7 @@ public class ThirdPesonController : MonoBehaviour
         if(rb == null)
             rb = GetComponent<Rigidbody>();//buscamos el componente Rigidbody y lo asignamos a nuestra variable
         rb.freezeRotation = true;//impedimos que pueda rotar las fisicas para evitar que se caiga el personaje 
-        Cursor.lockState = CursorLockMode.Locked;//bloqueamos el mouse
+        //Cursor.lockState = CursorLockMode.Locked;//bloqueamos el mouse
         Cursor.visible = false;//quitamos la vision del mouse
     }
 
@@ -51,13 +51,14 @@ public class ThirdPesonController : MonoBehaviour
 
     private void Move()
     {
-        
 
-        float horizontal = Input.GetAxis("Horizontal");//detectamos inputs horizontales
-        float vertical = Input.GetAxis("Vertical");//detectamos inputs verticales
+
+        float horizontal = 0;//Input.GetAxis("Horizontal");//detectamos inputs horizontales
+        float vertical = SimpleInput.GetAxis("Vertical");//detectamos inputs verticales
 
         if(vertical != 0)//si vertical no es 0 osea que se esta apretando si o si alguna de las dos teclas
         {
+            SoundManager.instance.moveSound(true);
             anim.SetBool("run", true);//activamos la animcacion de movernos 
             if(vertical > 0)//si vertical es mayor a 1 significa que se inclina para adelante si no para atras
                 mesh.transform.localRotation = Quaternion.Euler(-70, 0f, 0f);
@@ -66,6 +67,7 @@ public class ThirdPesonController : MonoBehaviour
         }
         else//si esta en 0 significa que no se esta moviendo
         {
+            SoundManager.instance.moveSound(false);
             anim.SetBool("run", false);//apagamos animacion
             mesh.transform.localRotation = Quaternion.Euler(-90, 0f, 0f);
         }
@@ -119,6 +121,7 @@ public class ThirdPesonController : MonoBehaviour
     }
     public void Disparar(Transform enemigo)
     {
+        SoundManager.instance.newEfect("disparo");
         //creamos las balas
         GameObject bala = Instantiate(balaPrefad, puntoDisparo[0].position, Quaternion.identity);
         GameObject bala2 = Instantiate(balaPrefad, puntoDisparo[1].position, Quaternion.identity);
@@ -132,6 +135,7 @@ public class ThirdPesonController : MonoBehaviour
         bala2.AddComponent<MovimientoBala>();
         bala2.GetComponent<MovimientoBala>().velocidad = velocidadBala;
 
+        //seteamos el da;o de los disparos
         bala.GetComponent<Disparo>().damage = damage;
         bala2.GetComponent<Disparo>().damage = damage;
     }
