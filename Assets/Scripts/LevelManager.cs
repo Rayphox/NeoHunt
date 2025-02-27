@@ -11,6 +11,9 @@ public class LevelManager : MonoBehaviour
     public float timeGame = 420;//tiempo para terminar la partida
     public int pointsGame = 0;//puntos acumulados
     public CanvasManager canvasManager;//referencia a nuestro canvasManager
+    public int energia = 100; //energia del disparo
+    public float timeEnergy = 10; //tiempo que tarda en empezar a recargar
+    public float tiempoEntreRecargas = 1f; //cooldown de la recarga de energia
     private void Awake()
     {
         instance = this;
@@ -32,6 +35,15 @@ public class LevelManager : MonoBehaviour
             {
                 endGame = true;
                 loseGame();
+            }
+        }
+
+        if (energia < 100)
+        {
+            timeEnergy -= Time.deltaTime;//al bajar de 100 comienza el cooldown
+            if (timeEnergy <= 0)//cuando pase el cooldown
+            {
+                recuperacionGradualDeEnergia();
             }
         }
     }
@@ -61,5 +73,16 @@ public class LevelManager : MonoBehaviour
             winGame();
             endGame = true;
         }
+    }
+    public void recuperacionGradualDeEnergia()
+    {
+        do { energia += 3; }
+        while (energia > 100);
+    }
+
+    IEnumerator cooldownRecargas()
+    {
+        yield return new WaitForSeconds(tiempoEntreRecargas);
+        recuperacionGradualDeEnergia();
     }
 }

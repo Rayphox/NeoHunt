@@ -11,7 +11,7 @@ public class CanvasManager : MonoBehaviour
     public TextMeshProUGUI tiempo;//guardamos el tiempo
     public GameObject finishGameUI;//guardamos el panel que muestra el final del juego
     public TextMeshProUGUI finishGameText;//texto que contiene si ganamos o perdimos 
-
+    public TextMeshProUGUI energia;//guardamos la energia
 
 
     // Update is called once per frame
@@ -21,6 +21,7 @@ public class CanvasManager : MonoBehaviour
         points[0].text = LevelManager.instance.pointsGame.ToString();
         points[1].text = LevelManager.instance.pointsGame.ToString();
         tiempo.text = Mathf.RoundToInt(LevelManager.instance.timeGame).ToString();
+        energia.text = LevelManager.instance.energia.ToString();
     }
     public void finishGame(bool game)//se llama al terminar la partida el bool determina si ganamos o no
     {

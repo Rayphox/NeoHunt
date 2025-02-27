@@ -46,6 +46,7 @@ public class ThirdPesonController : MonoBehaviour
         {
             Debug.Log("Tecla disparo");
             Disparo();
+            LevelManager.instance.energia -= 33;
         }
     }
 
